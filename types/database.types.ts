@@ -78,6 +78,7 @@ export type Database = {
           employeeId: string
           id: string
           meetingMinutes: number
+          morning_meetings: number
           ratePerHour: number
           setsAdded: number
           talkTime: string
@@ -94,6 +95,7 @@ export type Database = {
           employeeId: string
           id?: string
           meetingMinutes: number
+          morning_meetings: number
           ratePerHour: number
           setsAdded: number
           talkTime: string
@@ -110,6 +112,7 @@ export type Database = {
           employeeId?: string
           id?: string
           meetingMinutes?: number
+          morning_meetings?: number
           ratePerHour?: number
           setsAdded?: number
           talkTime?: string

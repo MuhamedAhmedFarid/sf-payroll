@@ -24,6 +24,7 @@ export interface WorkRecord {
   setsAdded: number;
   breakMinutes: number;
   meetingMinutes: number;
+  morning_meetings: number;
   moes_total: number;
   training: boolean;
   payment_status: string; // 'unpaid', 'pending', 'paid'
