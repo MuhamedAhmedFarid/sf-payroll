@@ -1,0 +1,5 @@
+{
+  "name": "Rep Performance Portal",
+  "description": "A web-based portal for admins to manage representative work logs and calculate payments, with a separate view for reps to see their performance data.",
+  "requestFramePermissions": []
+}
