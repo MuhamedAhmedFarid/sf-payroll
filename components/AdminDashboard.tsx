@@ -76,7 +76,7 @@ const emptyRecord: FormWorkRecord = {
   setsAdded: '',
   breakMinutes: 0,
   meetingMinutes: 0,
-  morning_meetings: 0,
+  morning_meetings: 30,
   isTraining: false,
 };
 
@@ -193,7 +193,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
       Number(currentRecord.setsAdded) || 0,
       currentRecord.breakMinutes,
       currentRecord.meetingMinutes,
-      currentRecord.morning_meetings,
+      currentRecord.morning_meetings || 0,
       currentRecord.isTraining
     );
   }, [ activeSeconds, currentRecord.setsAdded, currentRecord.breakMinutes, currentRecord.meetingMinutes, currentRecord.morning_meetings, currentRecord.isTraining ]);
@@ -335,7 +335,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
     activeSeconds,
     currentRecord.meetingMinutes,
     currentRecord.breakMinutes,
-    currentRecord.morning_meetings,
+    currentRecord.morning_meetings || 0,
     Number(currentRecord.ratePerHour) || 0,
     Number(currentRecord.setsAdded) || 0
   ), [activeSeconds, currentRecord.meetingMinutes, currentRecord.breakMinutes, currentRecord.morning_meetings, currentRecord.ratePerHour, currentRecord.setsAdded]);
@@ -367,7 +367,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
       
       const totalAmount = unpaid.reduce((sum, record) => {
           const active = parseHHMMSS(record.talkTime) + parseHHMMSS(record.waitTime);
-          const base = calculatePayment(active, record.meetingMinutes, record.breakMinutes, record.morning_meetings, record.ratePerHour, record.setsAdded);
+          const base = calculatePayment(active, record.meetingMinutes, record.breakMinutes, record.morning_meetings || 0, record.ratePerHour, record.setsAdded);
           const bonus = record.moes_total || 0;
           return sum + base + bonus;
       }, 0);
@@ -390,7 +390,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
       return Object.entries(batches).map(([batchId, data]) => {
           const totalAmount = data.records.reduce((sum, rec) => {
               const active = parseHHMMSS(rec.talkTime) + parseHHMMSS(rec.waitTime);
-              const base = calculatePayment(active, rec.meetingMinutes, rec.breakMinutes, rec.morning_meetings, rec.ratePerHour, rec.setsAdded);
+              const base = calculatePayment(active, rec.meetingMinutes, rec.breakMinutes, rec.morning_meetings || 0, rec.ratePerHour, rec.setsAdded);
               const bonus = rec.moes_total || 0;
               return sum + base + bonus;
           }, 0);
@@ -597,7 +597,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     </tr></thead>
                     <tbody>{filteredRecords.map((rec) => {
                        const active = parseHHMMSS(rec.talkTime) + parseHHMMSS(rec.waitTime);
-                       const payment = calculatePayment(active, rec.meetingMinutes, rec.breakMinutes, rec.morning_meetings, rec.ratePerHour, rec.setsAdded);
+                       const payment = calculatePayment(active, rec.meetingMinutes, rec.breakMinutes, rec.morning_meetings || 0, rec.ratePerHour, rec.setsAdded);
                        const isLocked = rec.payment_status.toLowerCase() === 'paid';
                        return (<tr key={rec.id} className={`${isLocked ? 'bg-gray-50' : ''} ${rec.training ? 'bg-yellow-50/30' : ''}`}>
                             <td className="px-4 py-3">{rec.date}</td>

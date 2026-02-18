@@ -45,15 +45,16 @@ export const calculatePayment = (
   activeSeconds: number,
   meetingMinutes: number,
   breakMinutes: number,
-  morningMeetingMinutes: number,
+  morningMeetingMinutes: number = 0,
   ratePerHour: number,
   setsAdded: number
 ): number => {
+  const mMM = morningMeetingMinutes || 0;
   if (
     isNaN(activeSeconds) ||
     isNaN(meetingMinutes) ||
     isNaN(breakMinutes) ||
-    isNaN(morningMeetingMinutes) ||
+    isNaN(mMM) ||
     isNaN(ratePerHour) ||
     isNaN(setsAdded)
   ) {
@@ -64,7 +65,7 @@ export const calculatePayment = (
   const activeHours = activeSeconds / 3600;
   const meetingHours = meetingMinutes / 60;
   const breakHours = breakMinutes / 60;
-  const morningMeetingHours = morningMeetingMinutes / 60;
+  const morningMeetingHours = mMM / 60;
   const totalHours = activeHours + meetingHours + breakHours + morningMeetingHours;
   const hourlyPay = totalHours * (ratePerHour || 0);
 
@@ -90,16 +91,17 @@ export const calculateRepsValue = (
   setsAdded: number,
   breakMinutes: number,
   meetingMinutes: number,
-  morningMeetingMinutes: number,
+  morningMeetingMinutes: number = 0,
   isTraining: boolean = false
 ): number => {
   if (isTraining) return 0;
 
+  const mMM = morningMeetingMinutes || 0;
   const activeHours = activeSeconds / 3600;
   const baseRepsValue = activeHours * 2;
   const setsBonus = (setsAdded || 0) * 5;
   const breaksBonus = ((breakMinutes || 0) / 60) * 2;
   const meetingsBonus = ((meetingMinutes || 0) / 60) * 2;
-  const morningMeetingsBonus = ((morningMeetingMinutes || 0) / 60) * 2;
+  const morningMeetingsBonus = (mMM / 60) * 2;
   return baseRepsValue + setsBonus + breaksBonus + meetingsBonus + morningMeetingsBonus;
 };

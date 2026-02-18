@@ -1,7 +1,7 @@
 
 import React, { useMemo, useState } from 'react';
 import { User, WorkRecord } from '../types';
-import { calculatePayment, formatSeconds, parseHHMMSS, calculateRepsValue } from '../utils/time';
+import { calculatePayment, formatSeconds, parseHHMMSS } from '../utils/time';
 import { LogoutIcon, ClockIcon, ChartBarIcon, CurrencyDollarIcon, CalendarIcon, ChatBubbleLeftRightIcon, PauseIcon, CheckCircleIcon } from './icons';
 
 interface RepDashboardProps {
@@ -93,7 +93,7 @@ const RepDashboard: React.FC<RepDashboardProps> = ({ repUser, allWorkRecords, on
       .filter(record => record.payment_status.toLowerCase() !== 'paid')
       .reduce((acc, record) => {
         const activeSeconds = parseHHMMSS(record.talkTime) + parseHHMMSS(record.waitTime);
-        const basePay = calculatePayment(activeSeconds, record.meetingMinutes, record.breakMinutes, record.morning_meetings, record.ratePerHour, record.setsAdded);
+        const basePay = calculatePayment(activeSeconds, record.meetingMinutes, record.breakMinutes, record.morning_meetings || 0, record.ratePerHour, record.setsAdded);
         return acc + basePay;
       }, 0);
 
@@ -102,7 +102,7 @@ const RepDashboard: React.FC<RepDashboardProps> = ({ repUser, allWorkRecords, on
       .filter(record => record.payment_status.toLowerCase() === 'paid')
       .reduce((acc, record) => {
         const activeSeconds = parseHHMMSS(record.talkTime) + parseHHMMSS(record.waitTime);
-        const basePay = calculatePayment(activeSeconds, record.meetingMinutes, record.breakMinutes, record.morning_meetings, record.ratePerHour, record.setsAdded);
+        const basePay = calculatePayment(activeSeconds, record.meetingMinutes, record.breakMinutes, record.morning_meetings || 0, record.ratePerHour, record.setsAdded);
         return acc + basePay;
       }, 0);
 
@@ -234,7 +234,7 @@ const RepDashboard: React.FC<RepDashboardProps> = ({ repUser, allWorkRecords, on
                         {filteredRecords.map((rec, index) => {
                            const activeSeconds = parseHHMMSS(rec.talkTime) + parseHHMMSS(rec.waitTime);
                            // Daily payment display also updated to exclude moes_total (Reps bonus)
-                           const totalDailyPayment = calculatePayment(activeSeconds, rec.meetingMinutes, rec.breakMinutes, rec.morning_meetings, rec.ratePerHour, rec.setsAdded);
+                           const totalDailyPayment = calculatePayment(activeSeconds, rec.meetingMinutes, rec.breakMinutes, rec.morning_meetings || 0, rec.ratePerHour, rec.setsAdded);
                            
                            return (
                              <tr key={rec.id} className={index % 2 === 0 ? 'bg-base-100' : 'bg-base-200'}>
@@ -245,7 +245,7 @@ const RepDashboard: React.FC<RepDashboardProps> = ({ repUser, allWorkRecords, on
                                 <td className="px-6 py-4">{rec.setsAdded}</td>
                                 <td className="px-6 py-4">{rec.breakMinutes} min</td>
                                 <td className="px-6 py-4">{rec.meetingMinutes} min</td>
-                                <td className="px-6 py-4">{rec.morning_meetings} min</td>
+                                <td className="px-6 py-4">{rec.morning_meetings || 0} min</td>
                                 <td className="px-6 py-4 font-semibold text-content-100">${totalDailyPayment.toFixed(2)}</td>
                                 <td className="px-6 py-4">
                                   <span className={`inline-flex items-center capitalize px-2 py-1 text-xs font-medium rounded-full ${paymentStatusColorMap[rec.payment_status.toLowerCase()] || ''}`}>
