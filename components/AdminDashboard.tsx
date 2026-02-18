@@ -76,6 +76,7 @@ const emptyRecord: FormWorkRecord = {
   setsAdded: '',
   breakMinutes: 0,
   meetingMinutes: 0,
+  morning_meetings: 0,
   isTraining: false,
 };
 
@@ -180,7 +181,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
     setCurrentRecord(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleQuickSelectChange = (field: 'breakMinutes' | 'meetingMinutes', value: number) => {
+  const handleQuickSelectChange = (field: 'breakMinutes' | 'meetingMinutes' | 'morning_meetings', value: number) => {
     setCurrentRecord(prev => ({ ...prev, [field]: value }));
   };
 
@@ -192,9 +193,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
       Number(currentRecord.setsAdded) || 0,
       currentRecord.breakMinutes,
       currentRecord.meetingMinutes,
+      currentRecord.morning_meetings,
       currentRecord.isTraining
     );
-  }, [ activeSeconds, currentRecord.setsAdded, currentRecord.breakMinutes, currentRecord.meetingMinutes, currentRecord.isTraining ]);
+  }, [ activeSeconds, currentRecord.setsAdded, currentRecord.breakMinutes, currentRecord.meetingMinutes, currentRecord.morning_meetings, currentRecord.isTraining ]);
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -333,9 +335,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
     activeSeconds,
     currentRecord.meetingMinutes,
     currentRecord.breakMinutes,
+    currentRecord.morning_meetings,
     Number(currentRecord.ratePerHour) || 0,
     Number(currentRecord.setsAdded) || 0
-  ), [activeSeconds, currentRecord.meetingMinutes, currentRecord.breakMinutes, currentRecord.ratePerHour, currentRecord.setsAdded]);
+  ), [activeSeconds, currentRecord.meetingMinutes, currentRecord.breakMinutes, currentRecord.morning_meetings, currentRecord.ratePerHour, currentRecord.setsAdded]);
 
   const grandTotalPreview = useMemo(() => {
     return totalPaymentPreview + repsValuePreview;
@@ -364,7 +367,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
       
       const totalAmount = unpaid.reduce((sum, record) => {
           const active = parseHHMMSS(record.talkTime) + parseHHMMSS(record.waitTime);
-          const base = calculatePayment(active, record.meetingMinutes, record.breakMinutes, record.ratePerHour, record.setsAdded);
+          const base = calculatePayment(active, record.meetingMinutes, record.breakMinutes, record.morning_meetings, record.ratePerHour, record.setsAdded);
           const bonus = record.moes_total || 0;
           return sum + base + bonus;
       }, 0);
@@ -387,7 +390,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
       return Object.entries(batches).map(([batchId, data]) => {
           const totalAmount = data.records.reduce((sum, rec) => {
               const active = parseHHMMSS(rec.talkTime) + parseHHMMSS(rec.waitTime);
-              const base = calculatePayment(active, rec.meetingMinutes, rec.breakMinutes, rec.ratePerHour, rec.setsAdded);
+              const base = calculatePayment(active, rec.meetingMinutes, rec.breakMinutes, rec.morning_meetings, rec.ratePerHour, rec.setsAdded);
               const bonus = rec.moes_total || 0;
               return sum + base + bonus;
           }, 0);
@@ -551,7 +554,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
                 <div><label className="block mb-2 text-sm font-semibold text-content-200">Zoom Scheduled</label><div className="flex space-x-2">{[0, 30, 45, 60].map(m => (<button type="button" key={`m-${m}`} onClick={() => handleQuickSelectChange('meetingMinutes', m)} className={`px-3 py-1 text-sm font-semibold rounded-full transition-colors ${currentRecord.meetingMinutes === m ? 'bg-accent text-base-100' : 'bg-base-300/50 text-content-200 hover:bg-base-300'}`}>{m === 0 ? 'None' : m === 60 ? '1hr' : `${m}m`}</button>))}</div></div>
                 
-                <div className="flex items-end space-x-4 sm:col-span-2">
+                <div><label className="block mb-2 text-sm font-semibold text-content-200">Morning Meetings</label><div className="flex space-x-2">{[0, 30].map(m => (<button type="button" key={`mm-${m}`} onClick={() => handleQuickSelectChange('morning_meetings', m)} className={`px-3 py-1 text-sm font-semibold rounded-full transition-colors ${currentRecord.morning_meetings === m ? 'bg-accent text-base-100' : 'bg-base-300/50 text-content-200 hover:bg-base-300'}`}>{m === 0 ? 'None' : '30m'}</button>))}</div></div>
+
+                <div className="flex items-end space-x-4 sm:col-span-2 lg:col-span-1">
                   <button type="submit" className="w-full px-6 py-3 font-semibold text-base-100 bg-accent rounded-lg hover:bg-opacity-90">{editingRecordId ? 'Update Record' : 'Submit Record'}</button>
                   {editingRecordId && <button type="button" onClick={resetForm} className="w-full px-6 py-3 font-semibold text-content-200 bg-base-300 rounded-lg hover:bg-base-400">Cancel Edit</button>}
                 </div>
@@ -592,7 +597,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     </tr></thead>
                     <tbody>{filteredRecords.map((rec) => {
                        const active = parseHHMMSS(rec.talkTime) + parseHHMMSS(rec.waitTime);
-                       const payment = calculatePayment(active, rec.meetingMinutes, rec.breakMinutes, rec.ratePerHour, rec.setsAdded);
+                       const payment = calculatePayment(active, rec.meetingMinutes, rec.breakMinutes, rec.morning_meetings, rec.ratePerHour, rec.setsAdded);
                        const isLocked = rec.payment_status.toLowerCase() === 'paid';
                        return (<tr key={rec.id} className={`${isLocked ? 'bg-gray-50' : ''} ${rec.training ? 'bg-yellow-50/30' : ''}`}>
                             <td className="px-4 py-3">{rec.date}</td>

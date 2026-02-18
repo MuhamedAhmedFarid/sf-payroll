@@ -36,6 +36,7 @@ export const formatSeconds = (totalSeconds: number): string => {
  * @param activeSeconds - Total active work time in seconds.
  * @param meetingMinutes - Total meeting time in minutes.
  * @param breakMinutes - Total break time in minutes.
+ * @param morningMeetingMinutes - Total morning meeting time in minutes.
  * @param ratePerHour - The hourly pay rate.
  * @param setsAdded - The number of sets added.
  * @returns The calculated total payment.
@@ -44,6 +45,7 @@ export const calculatePayment = (
   activeSeconds: number,
   meetingMinutes: number,
   breakMinutes: number,
+  morningMeetingMinutes: number,
   ratePerHour: number,
   setsAdded: number
 ): number => {
@@ -51,6 +53,7 @@ export const calculatePayment = (
     isNaN(activeSeconds) ||
     isNaN(meetingMinutes) ||
     isNaN(breakMinutes) ||
+    isNaN(morningMeetingMinutes) ||
     isNaN(ratePerHour) ||
     isNaN(setsAdded)
   ) {
@@ -61,7 +64,8 @@ export const calculatePayment = (
   const activeHours = activeSeconds / 3600;
   const meetingHours = meetingMinutes / 60;
   const breakHours = breakMinutes / 60;
-  const totalHours = activeHours + meetingHours + breakHours;
+  const morningMeetingHours = morningMeetingMinutes / 60;
+  const totalHours = activeHours + meetingHours + breakHours + morningMeetingHours;
   const hourlyPay = totalHours * (ratePerHour || 0);
 
   // Calculate set-based pay
@@ -77,6 +81,7 @@ export const calculatePayment = (
  * @param setsAdded - The number of sets added.
  * @param breakMinutes - Total break time in minutes.
  * @param meetingMinutes - Total meeting time in minutes.
+ * @param morningMeetingMinutes - Total morning meeting time in minutes.
  * @param isTraining - Whether this is a training session (overrides to 0).
  * @returns The calculated "Reps" bonus value.
  */
@@ -85,6 +90,7 @@ export const calculateRepsValue = (
   setsAdded: number,
   breakMinutes: number,
   meetingMinutes: number,
+  morningMeetingMinutes: number,
   isTraining: boolean = false
 ): number => {
   if (isTraining) return 0;
@@ -94,5 +100,6 @@ export const calculateRepsValue = (
   const setsBonus = (setsAdded || 0) * 5;
   const breaksBonus = ((breakMinutes || 0) / 60) * 2;
   const meetingsBonus = ((meetingMinutes || 0) / 60) * 2;
-  return baseRepsValue + setsBonus + breaksBonus + meetingsBonus;
+  const morningMeetingsBonus = ((morningMeetingMinutes || 0) / 60) * 2;
+  return baseRepsValue + setsBonus + breaksBonus + meetingsBonus + morningMeetingsBonus;
 };

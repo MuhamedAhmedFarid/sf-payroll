@@ -128,6 +128,7 @@ const App: React.FC = () => {
           waitTime: formatSeconds(parseHHMMSS(existingRecord.waitTime) + parseHHMMSS(record.waitTime)),
           breakMinutes: existingRecord.breakMinutes + record.breakMinutes,
           meetingMinutes: existingRecord.meetingMinutes + record.meetingMinutes,
+          morning_meetings: (existingRecord.morning_meetings || 0) + (record.morning_meetings || 0),
           setsAdded: existingRecord.setsAdded + record.setsAdded,
           ratePerHour: Number(record.ratePerHour) || existingRecord.ratePerHour, // Use new rate, fallback to old
           moes_total: newMoesTotal,
